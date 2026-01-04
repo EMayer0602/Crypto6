@@ -32,6 +32,12 @@ def load_ohlcv(symbol, timeframe="1h"):
         return None
 
     df = pd.read_csv(cache_file, index_col=0, parse_dates=True)
+
+    # Ensure index is DatetimeIndex
+    if not isinstance(df.index, pd.DatetimeIndex):
+        df.index = pd.to_datetime(df.index, utc=True)
+
+    # Handle timezone
     if df.index.tz is None:
         df.index = df.index.tz_localize('UTC').tz_convert(BERLIN_TZ)
     else:
